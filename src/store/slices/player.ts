@@ -1,6 +1,6 @@
-import { PayloadAction, createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { useAppSelector } from "..";
-import { api } from "../../lib/axios";
+import { PayloadAction, createSlice, createAsyncThunk } from "@reduxjs/toolkit"
+import { useAppSelector } from ".."
+import { api } from "../../lib/axios"
 
 interface Course {
   id: number
@@ -26,20 +26,17 @@ const initialState: PlayerState = {
   course: null,
   currentModuleIndex: 0,
   currentLessonIndex: 0,
-  isLoading: true
+  isLoading: true,
 }
 
-export const loadCourse = createAsyncThunk(
-  'player/load',
-  async () => {
-    const response = await api.get("/courses/1")
+export const loadCourse = createAsyncThunk("player/load", async () => {
+  const response = await api.get("/courses/1")
 
-    return response.data
-  }
-)
+  return response.data
+})
 
 export const playerSlice = createSlice({
-  name: 'player',
+  name: "player",
   initialState,
   reducers: {
     start: (state, action: PayloadAction<Course>) => {
@@ -53,7 +50,8 @@ export const playerSlice = createSlice({
 
     next: (state) => {
       const nextLessonIndex = state.currentLessonIndex + 1
-      const nextLesson = state.course?.modules[state.currentModuleIndex].lessons[nextLessonIndex]
+      const nextLesson =
+        state.course?.modules[state.currentModuleIndex].lessons[nextLessonIndex]
 
       if (nextLesson) {
         state.currentLessonIndex = nextLessonIndex
@@ -68,7 +66,7 @@ export const playerSlice = createSlice({
         state.currentLessonIndex = 0
         return
       }
-    }
+    },
   },
   extraReducers(builder) {
     builder.addCase(loadCourse.pending, (state) => {
@@ -85,14 +83,3 @@ export const playerSlice = createSlice({
 export const player = playerSlice.reducer
 
 export const { start, play, next } = playerSlice.actions
-
-export const useCurrentLesson = () => {
-  return useAppSelector((state) => {
-    const { currentModuleIndex, currentLessonIndex } = state.player
-
-    const currentModule = state.player.course?.modules[currentModuleIndex]
-    const currentLesson = currentModule?.lessons[currentLessonIndex]
-
-    return { currentModule, currentLesson }
-  })
-}
